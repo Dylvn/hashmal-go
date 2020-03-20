@@ -1,5 +1,5 @@
 # hashmal-go
-A simple website created in Go. That's my first app in go for try the language.
+A simple website created in Go. That's my first app in Go to try the language.
 
 # Installation
 
