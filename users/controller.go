@@ -10,8 +10,11 @@ import (
 
 func Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Redirect(w, r, "/", http.StatusMethodNotAllowed)
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
+	}
+	if isConnected(w, r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	config.Tpl.ExecuteTemplate(w, "register.gohtml", nil)
@@ -19,8 +22,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 func Store(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "/", http.StatusMethodNotAllowed)
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
+	}
+	if isConnected(w, r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 	var err error
 
@@ -42,4 +48,45 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("User created with success")
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	if isConnected(w, r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	config.Tpl.ExecuteTemplate(w, "login.gohtml", nil)
+}
+
+func LoginProcess(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	if isConnected(w, r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+	var err error
+
+	u := User{}
+	u.Username = r.FormValue("username")
+	u.Password = r.FormValue("password")
+	u.hashedPassword, err = bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = authenticate(&u, w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
