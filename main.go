@@ -25,5 +25,9 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	config.Tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	config.Tpl.ExecuteTemplate(w, "index.gohtml", struct {
+		Title string
+	}{
+		"Home",
+	})
 }

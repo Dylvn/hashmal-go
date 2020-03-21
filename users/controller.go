@@ -1,7 +1,6 @@
 package users
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Dylvn/hashmal-go/config"
@@ -17,7 +16,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	config.Tpl.ExecuteTemplate(w, "register.gohtml", nil)
+	config.Tpl.ExecuteTemplate(w, "register.gohtml", struct {
+		Title string
+	}{
+		"Register",
+	})
 }
 
 func Store(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +50,6 @@ func Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("User created with success")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
@@ -60,7 +62,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	config.Tpl.ExecuteTemplate(w, "login.gohtml", nil)
+	config.Tpl.ExecuteTemplate(w, "login.gohtml", struct {
+		Title string
+	}{
+		"Login",
+	})
 }
 
 func LoginProcess(w http.ResponseWriter, r *http.Request) {
