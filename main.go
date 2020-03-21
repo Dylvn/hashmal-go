@@ -13,7 +13,7 @@ func main() {
 
 	// Users
 	http.HandleFunc("/register", users.Create)
-	http.HandleFunc("/users/process", users.Store)
+	http.HandleFunc("/register/process", users.Store)
 	http.HandleFunc("/login", users.Login)
 	http.HandleFunc("/login/process", users.LoginProcess)
 
