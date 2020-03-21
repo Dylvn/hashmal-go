@@ -1,18 +1,16 @@
-{{ template "header" }}
-<body>
-    <div>
-        <form action="/login/process" method="POST">
-            <div>
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username">
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password">
-            </div>
+{{ template "header" . }}
+<div>
+    <form action="/login/process" method="POST">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+        </div>
 
-            <button type="submit">Login</button>
-        </form>
-    </div>
-</body>
-</html>
+        <button type="submit">Login</button>
+    </form>
+</div>
+{{ template "footer" }}
