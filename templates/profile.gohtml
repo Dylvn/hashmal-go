@@ -1,0 +1,15 @@
+{{ template "header" . }}
+<div id="js-block-change-password">
+    {{ template "change_password" }}
+</div>
+<div>
+    <div>
+        <label for="username">Username : </label>
+        <input type="text" name="username" id="username" value="{{ .User.Username }}" disabled>
+    </div>
+    <div>
+        <label for="email">Email :</label>
+        <input type="email" name="email" id="email" value="{{ .User.Email }}" disabled>
+    </div>
+</div>
+{{ template "footer" }}

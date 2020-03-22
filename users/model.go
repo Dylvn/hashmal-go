@@ -38,3 +38,14 @@ func getByUsername(username string) (*User, error) {
 
 	return &u, nil
 }
+
+func getUserByID(id int) (*User, error) {
+	var u User
+	row := config.DB.QueryRow("SELECT * FROM users WHERE id = $1", id)
+	err := row.Scan(&u.ID, &u.Username, &u.Password, &u.Email, &u.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}

@@ -1,12 +1,15 @@
 package users
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Dylvn/hashmal-go/config"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var ErrUserNotConnected = errors.New("User not connected")
 
 func authenticate(u *User, w http.ResponseWriter, r *http.Request) (*User, error) {
 	uDB, err := getByUsername(u.Username)
@@ -51,4 +54,22 @@ func isConnected(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	return true
+}
+
+// GetUser return an error if user not connected of type ErrUserNotConnected
+// and an error if the DB can't scan the query
+func GetUser(w http.ResponseWriter, r *http.Request) (*User, error) {
+	if !isConnected(w, r) {
+		return nil, ErrUserNotConnected
+	}
+
+	// Not need to get err since isConnected() already tested it
+	c, _ := r.Cookie("session-id")
+	id, _ := config.Session.Get(c.Value)
+	u, err := getUserByID(id.(int))
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }

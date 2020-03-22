@@ -7,31 +7,42 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Create(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if isConnected(w, r) {
+	_, err := GetUser(w, r)
+	if err == nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if err != ErrUserNotConnected {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
 	}
 
 	config.Tpl.ExecuteTemplate(w, "register.gohtml", struct {
 		Title string
+		User  *User
 	}{
 		"Register",
+		nil,
 	})
 }
 
-func Store(w http.ResponseWriter, r *http.Request) {
+func RegisterProcess(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if isConnected(w, r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
 	var err error
+
+	_, err = GetUser(w, r)
+	if err == nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if err != ErrUserNotConnected {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 
 	u := User{}
 	u.Username = r.FormValue("username")
@@ -58,14 +69,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if isConnected(w, r) {
+	_, err := GetUser(w, r)
+	if err == nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if err != ErrUserNotConnected {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	config.Tpl.ExecuteTemplate(w, "login.gohtml", struct {
 		Title string
+		User  *User
 	}{
 		"Login",
+		nil,
 	})
 }
 
@@ -74,10 +91,15 @@ func LoginProcess(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if isConnected(w, r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
 	var err error
+
+	_, err = GetUser(w, r)
+	if err == nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if err != ErrUserNotConnected {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 
 	u := User{}
 	u.Username = r.FormValue("username")
@@ -95,4 +117,39 @@ func LoginProcess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func Profile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	u, err := GetUser(w, r)
+	if err != nil {
+		if err == ErrUserNotConnected {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	config.Tpl.ExecuteTemplate(w, "profile.gohtml", struct {
+		Title string
+		User  *User
+	}{
+		Title: "Profile",
+		User:  u,
+	})
+}
+
+func ProfileProcess(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	if !isConnected(w, r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
 }

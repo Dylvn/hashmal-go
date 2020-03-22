@@ -12,10 +12,12 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets"))))
 
 	// Users
-	http.HandleFunc("/register", users.Create)
-	http.HandleFunc("/register/process", users.Store)
+	http.HandleFunc("/register", users.Register)
+	http.HandleFunc("/register/process", users.RegisterProcess)
 	http.HandleFunc("/login", users.Login)
 	http.HandleFunc("/login/process", users.LoginProcess)
+	http.HandleFunc("/profile", users.Profile)
+	http.HandleFunc("/profile/process", users.ProfileProcess)
 
 	// Offices
 
@@ -25,9 +27,16 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
+	u, err := users.GetUser(w, r)
+	if err != nil && err != users.ErrUserNotConnected {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
 	config.Tpl.ExecuteTemplate(w, "index.gohtml", struct {
 		Title string
+		User  *users.User
 	}{
 		"Home",
+		u,
 	})
 }
