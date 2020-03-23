@@ -5,6 +5,11 @@
         <li>
             <a href="/profile">Profile</a>
         </li>
+            {{ if .User.Admin }}
+            <li>
+                <a href="/offices/create">Create new office</a>
+            </li>
+            {{ end }}
         {{ else }}
         <li>
             <a href="/login">Login</a>

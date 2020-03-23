@@ -9,7 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ErrUserNotConnected = errors.New("User not connected")
+var ErrUserNotConnected = errors.New("User not connected.")
+var ErrUserNotAdmin = errors.New("User not admin.")
 
 func authenticate(u *User, w http.ResponseWriter, r *http.Request) (*User, error) {
 	uDB, err := getByUsername(u.Username)
@@ -57,7 +58,7 @@ func isConnected(w http.ResponseWriter, r *http.Request) bool {
 }
 
 // GetUser return an error if user not connected of type ErrUserNotConnected
-// and an error if the DB can't scan the query
+// or an error if the DB can't scan the query
 func GetUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 	if !isConnected(w, r) {
 		return nil, ErrUserNotConnected
@@ -69,6 +70,22 @@ func GetUser(w http.ResponseWriter, r *http.Request) (*User, error) {
 	u, err := getUserByID(id.(int))
 	if err != nil {
 		return nil, err
+	}
+
+	return u, nil
+}
+
+// GetUserAdmin returns ErrNotConnected if user is not connected
+// returns ErrUserNotAdmin if user is not admin
+// or an error if the DB can't scan the query
+func GetUserAdmin(w http.ResponseWriter, r *http.Request) (*User, error) {
+	u, err := GetUser(w, r)
+	if err != nil {
+		return nil, err
+	}
+
+	if !u.Admin {
+		return nil, ErrUserNotAdmin
 	}
 
 	return u, nil

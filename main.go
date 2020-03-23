@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Dylvn/hashmal-go/config"
+	"github.com/Dylvn/hashmal-go/offices"
 	"github.com/Dylvn/hashmal-go/users"
 )
 
@@ -20,6 +21,8 @@ func main() {
 	http.HandleFunc("/ajax/change-password", users.AjaxChangePassword)
 
 	// Offices
+	http.HandleFunc("/offices/create", offices.Create)
+	http.HandleFunc("/offices/create/process", offices.Store)
 
 	// Index
 	http.HandleFunc("/", index)
