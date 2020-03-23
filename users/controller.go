@@ -142,14 +142,3 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 		User:  u,
 	})
 }
-
-func ProfileProcess(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		return
-	}
-	if !isConnected(w, r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-
-}

@@ -49,3 +49,18 @@ func getUserByID(id int) (*User, error) {
 
 	return &u, nil
 }
+
+func updatePassword(u *User, newPass string) error {
+	stmt, err := config.DB.Prepare("UPDATE users SET password = $1 WHERE id = $2")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(newPass, u.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

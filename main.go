@@ -17,7 +17,7 @@ func main() {
 	http.HandleFunc("/login", users.Login)
 	http.HandleFunc("/login/process", users.LoginProcess)
 	http.HandleFunc("/profile", users.Profile)
-	http.HandleFunc("/profile/process", users.ProfileProcess)
+	http.HandleFunc("/ajax/change-password", users.AjaxChangePassword)
 
 	// Offices
 
