@@ -16,3 +16,6 @@ vendor/
 
 # config files
 .env
+
+# goland
+.idea
