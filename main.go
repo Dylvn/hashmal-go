@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/ajax/change-password", users.AjaxChangePassword)
 
 	// Offices
+	http.HandleFunc("/offices", offices.List)
 	http.HandleFunc("/offices/create", offices.Create)
 	http.HandleFunc("/offices/create/process", offices.Store)
 

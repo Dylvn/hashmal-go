@@ -1,0 +1,28 @@
+{{ template "header" . }}
+<div>
+    <ul>
+        {{ range .Offices }}
+            <li>{{ .Name }} - {{ .Description }} - {{ .Price }}</li>
+        {{ end }}
+    </ul>
+
+    <ul>
+        <li>
+            <a href="/offices">First page</a>
+        </li>
+        {{ if .PreviousUrl }}
+        <li>
+            <a href="{{ .PreviousUrl }}">Previous page</a>
+        </li>
+        {{ end }}
+        {{ if .NextUrl }}
+        <li>
+            <a href="{{ .NextUrl }}">Next page</a>
+        </li>
+        {{ end }}
+        <li>
+            <a href="{{ .LastUrl }}">Last page</a>
+        </li>
+    </ul>
+</div>
+{{ template "footer" . }}
